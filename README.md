@@ -1,7 +1,9 @@
 # cs224n
-my repository for cs224n: nlp with dl including assignments, implementations, resources
+my repository for cs224n: nlp with dl including assignments, implementations, resources, etc.
 
-Book: https://web.stanford.edu/~jurafsky/slp3/
+Book: 
+- [Speech & Language Processing](https://web.stanford.edu/~jurafsky/slp3/)
+- Natural Language Processing with Transformers (Building Language Applications with Hugging Face) 
  
 Course Links: 
 - https://www.youtube.com/playlist?list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4
