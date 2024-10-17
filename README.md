@@ -8,3 +8,6 @@ Book:
 Course Links: 
 - [Course Website](https://web.stanford.edu/class/cs224n/index.html)
 - [Lectures](https://www.youtube.com/playlist?list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVRd4)
+
+References:
+- [Repo: cs224n-win2223](https://github.com/floriankark/cs224n-win2223)
