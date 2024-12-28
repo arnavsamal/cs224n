@@ -102,6 +102,42 @@ class CharCorruptionDataset(Dataset):
         # TODO [part e]: see spec above
         ### YOUR CODE HERE ###
         pass
+        document = self.data[idx]
+
+        # Step 1: Randomly truncate the document
+        max_length = int(self.block_size * 7 / 8)
+        trunc_length = random.randint(4, max_length)
+        truncated_doc = document[:trunc_length]
+
+        # Step 2: Split the truncated document into prefix, masked_content, and suffix
+        doc_len = len(truncated_doc)
+        masked_len = random.randint(1, max(1, doc_len // 4))  # Masked content length
+        prefix_len = random.randint(0, doc_len - masked_len)
+        suffix_len = doc_len - masked_len - prefix_len
+
+        prefix = truncated_doc[:prefix_len]
+        masked_content = truncated_doc[prefix_len:prefix_len + masked_len]
+        suffix = truncated_doc[prefix_len + masked_len:]
+
+        # Step 3: Construct the masked string
+        masked_string = (
+            prefix +
+            self.MASK_CHAR +
+            suffix +
+            self.MASK_CHAR +
+            masked_content +
+            self.PAD_CHAR * (self.block_size + 1 - len(prefix + suffix + masked_content) - 2)
+        )
+
+        # Step 4: Create input (x) and output (y) sequences
+        x = masked_string[:-1]  # Input is everything except the last character
+        y = masked_string[1:]   # Output is everything except the first character
+
+        # Step 5: Encode the strings into Long tensors
+        x_encoded = torch.tensor([self.stoi[c] for c in x], dtype=torch.long)
+        y_encoded = torch.tensor([self.stoi[c] for c in y], dtype=torch.long)
+
+        return x_encoded, y_encoded
         ### END YOUR CODE ###
 
 

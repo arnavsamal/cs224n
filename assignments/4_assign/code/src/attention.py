@@ -38,7 +38,11 @@ def precompute_rotary_emb(dim, max_positions):
     rope_cache = None
     # TODO: [part g]
     ### YOUR CODE HERE ###
-    pass
+    half_dim = dim // 2
+    theta = 1.0 / (10000 ** (torch.arange(half_dim, dtype=torch.float32) / half_dim))
+    positions = torch.arange(max_positions, dtype=torch.float32).unsqueeze(1)
+    sinusoid = positions * theta  # (max_positions, dim/2)
+    rope_cache = torch.stack((torch.cos(sinusoid), torch.sin(sinusoid)), dim=-1)  # (max_positions, dim/2, 2)
     ### END YOUR CODE ###
     return rope_cache
 
@@ -58,7 +62,14 @@ def apply_rotary_emb(x, rope_cache):
 
     rotated_x = None
     ### YOUR CODE HERE ###
-    pass
+    seq_len = x.size(1)
+    # Truncate rope_cache to sequence length if needed
+    truncated_cache = rope_cache[:seq_len]
+    cos, sin = truncated_cache[..., 0], truncated_cache[..., 1]  # (seq_len, dim/2)
+    x_real, x_imag = x[..., 0::2], x[..., 1::2]  # Split into real and imaginary
+    rotated_x_real = x_real * cos - x_imag * sin
+    rotated_x_imag = x_real * sin + x_imag * cos
+    rotated_x = torch.stack((rotated_x_real, rotated_x_imag), dim=-1).flatten(-2)
     ### END YOUR CODE ###
     return rotated_x
 
@@ -86,7 +97,8 @@ class CausalSelfAttention(nn.Module):
             # Hint: The maximum sequence length is given by config.block_size.
             rope_cache = None
             ### YOUR CODE HERE ###
-            pass
+            head_dim = config.n_embd // config.n_head
+            rope_cache = precompute_rotary_emb(head_dim, config.block_size)
             ### END YOUR CODE ###
 
             self.register_buffer("rope_cache", rope_cache)
@@ -112,7 +124,8 @@ class CausalSelfAttention(nn.Module):
         if self.rope:
             # TODO: [part g] Apply RoPE to the query and key.
             ### YOUR CODE HERE ###
-            pass
+            q = apply_rotary_emb(q, self.rope_cache)
+            k = apply_rotary_emb(k, self.rope_cache)
             ### END YOUR CODE ###
 
         # causal self-attention; Self-attend: (B, nh, T, hs) x (B, nh, hs, T) -> (B, nh, T, T)

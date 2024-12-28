@@ -12,7 +12,19 @@ def main():
 
     # Compute accuracy in the range [0.0, 100.0]
     ### YOUR CODE HERE ###
-    pass
+    # Load the dev dataset
+    dev_data = utils.load_birth_dev_data()
+
+    # Predict "London" for every example and compute accuracy
+    correct_predictions = 0
+    total_examples = len(dev_data)
+
+    for question, answer in dev_data:
+        prediction = "London"
+        if prediction == answer:
+            correct_predictions += 1
+
+    accuracy = (correct_predictions / total_examples) * 100.0
     ### END YOUR CODE ###
 
     return accuracy
